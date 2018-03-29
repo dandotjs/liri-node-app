@@ -1,4 +1,3 @@
-import { twitter } from "./keys";
 
 require("dotenv").config();
 
