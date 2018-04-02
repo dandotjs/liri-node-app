@@ -2,11 +2,12 @@ require("dotenv").config();
 
 const apiKeys = require("keys.js");
 
-var client = new twitter(apiKeys.twitter);
+var client = new Twitter(apiKeys.twitter);
 
-var spotify = new spotify(apiKeys.spotify);
+var spotify = new Spotify(apiKeys.spotify);
 
 
 $.ajax({
-    url: 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=' + '' + '&count=20'
+    method: GET,
+    url: 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=' + client.consumer_key + '&count=20',
 })
