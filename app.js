@@ -1,5 +1,7 @@
 require("dotenv").config();
 
+// Add in all necessary modules
+
 const request = require('request');
 
 const apiKeys = require("./keys.js");
@@ -12,12 +14,13 @@ const SpotifyWebApi = require('node-spotify-api');
 
 const fs = require('fs');
 
-// credentials are optional
+// sets spotifyApi up with all proper credentials
 var spotifyApi = new SpotifyWebApi({
     id: process.env.SPOTIFY_ID,
     secret: process.env.SPOTIFY_SECRET,
 });
 
+// sets client up with all proper credentials
 const client = new Twitter({
     consumer_key: process.env.TWITTER_CONSUMER_KEY,
     consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
@@ -25,7 +28,6 @@ const client = new Twitter({
     access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
 });
 
-// const spotify = apiKeys.spotify;
 
 let twitterUsername = "";
 
@@ -93,10 +95,12 @@ function runSpotify() {
             console.log('Here is your song info for ' + spotifySong.spotifySong)
             spotifyApi.search({ type: 'track', query: spotifySong.spotifySong, limit: 1 })
                 .then(function (response) {
-                    console.log('Artist: ' + JSON.stringify(response.tracks.items[0].album.artists[0].name, null, 2)
+                    console.log(
+                        'Artist: ' + JSON.stringify(response.tracks.items[0].album.artists[0].name, null, 2)
                         + ' Album: ' + JSON.stringify(response.tracks.items[0].album.name, null, 2)
                         + ' Listen Here: ' + JSON.stringify(response.tracks.items[0].album.artists[0].external_urls.spotify, null, 2));
                 })
+                
                 .catch(function (err) {
                     console.log(err);
                 });
@@ -132,5 +136,3 @@ function runOMDB() {
 
         });
 }
-
-fs.readFile();
