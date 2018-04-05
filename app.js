@@ -8,7 +8,7 @@ const Twitter = require('twitter');
 
 const inquirer = require('inquirer');
 
-const SpotifyWebApi = require('spotify-web-api-node');
+const SpotifyWebApi = require('node-spotify-api');
 
 // credentials are optional
 var spotifyApi = new SpotifyWebApi({
@@ -29,6 +29,27 @@ let twitterUsername = "";
 
 let spotifySong = "";
 
+  /*inquirer.prompt([
+       {
+           type: 'list',
+           message: 'Please type one of the following commands: ',
+           choices: ['> my-tweets', '> spotify-this-song', '> movie-this'],
+           name: 'usercommand',
+       },
+
+   ])
+       .then(answers => {
+           if (answers === inquirer.prompt.choices[0]){
+               runTwitter();
+           }
+           else if (answers === inquirer.choices[1]){
+               runSpotify();
+           }
+       })*/
+
+
+
+
 function runTwitter() {
 
     inquirer.prompt([
@@ -46,7 +67,6 @@ function runTwitter() {
                 if (error) throw error;
                 for (i = 0; i < tweets.length; i++) {
                     console.log('- ' + tweets[i].text + '\n');
-                    // console.log(JSON.stringify(tweets, null, 2));
                 }
             });
         })
@@ -64,12 +84,15 @@ function runSpotify() {
     ])
         .then(answers => {
             spotifySong = (answers);
-            console.log('Here is you song info for ' + spotifySong.spotifySong);
-            spotifyApi.searchTracks(spotifySong.spotifySon)
-                .then(function (data) {
-                    console.log('Search by "Love"', data.body);
-                }, function (err) {
-                    console.error(err);
+            console.log('Here is your song info for ' + spotifySong.spotifySong)
+            spotifyApi.search({ type: 'track', query: spotifySong.spotifySong, limit: 1})
+                .then(function (response) {
+                    console.log('Artist: ' + JSON.stringify(response.tracks.items[0].album.artists[0].name, null, 2) 
+                    + ' Album: ' + JSON.stringify(response.tracks.items[0].album.name, null, 2)
+                    +' Listen Here: ' + JSON.stringify(response.tracks.items[0].album.artists[0].external_urls.spotify, null, 2));
+                })
+                .catch(function (err) {
+                    console.log(err);
                 });
 
         })
@@ -77,17 +100,23 @@ function runSpotify() {
 
 //runSpotify();
 
+function runOMDB() {
     inquirer.prompt([
         {
-            type: 'list',
-            message: 'Please type one of the following commands: ',
-            choices: ['> my-tweets', '> spotify-this-song', '> movie-this'],
-            name: 'usercommand',
-        },
-
+            type: 'input',
+            message: 'Please enter a movie you want to search for',
+            name: 'movieSearch',
+        }
     ])
         .then(answers => {
-            if (answers === '> my-tweets'){
-                runTwitter();
-            }
-        })
+            movieSearch = (answers);
+            var omdbSearch = movieSearch.movieSearch;
+            request('http://www.omdbapi.com/?apikey=9d8265a0&t='+ omdbSearch.replace(/ /i, '+'), function (error, response, body) {
+                console.log('body:', body); 
+                console.log(body.Title);
+    })
+
+});
+}
+
+runOMDB();
