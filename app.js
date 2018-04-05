@@ -10,6 +10,8 @@ const inquirer = require('inquirer');
 
 const SpotifyWebApi = require('node-spotify-api');
 
+const fs = require('fs');
+
 // credentials are optional
 var spotifyApi = new SpotifyWebApi({
     id: process.env.SPOTIFY_ID,
@@ -28,24 +30,28 @@ const client = new Twitter({
 let twitterUsername = "";
 
 let spotifySong = "";
+const commandChoices = ['> my-tweets', '> spotify-this-song', '> movie-this'];
+inquirer.prompt([
+    {
+        type: 'list',
+        message: 'Please type one of the following commands: ',
+        choices: commandChoices,
+        name: 'usercommand',
+    },
 
-  /*inquirer.prompt([
-       {
-           type: 'list',
-           message: 'Please type one of the following commands: ',
-           choices: ['> my-tweets', '> spotify-this-song', '> movie-this'],
-           name: 'usercommand',
-       },
-
-   ])
-       .then(answers => {
-           if (answers === inquirer.prompt.choices[0]){
-               runTwitter();
-           }
-           else if (answers === inquirer.choices[1]){
-               runSpotify();
-           }
-       })*/
+])
+    .then(answers => {
+        console.log(answers)
+        if (answers.usercommand === commandChoices[0]) {
+            runTwitter();
+        }
+        else if (answers.usercommand === commandChoices[1]) {
+            runSpotify();
+        }
+        else if (answers.usercommand === commandChoices[2]) {
+            runOMDB();
+        }
+    })
 
 
 
@@ -85,11 +91,11 @@ function runSpotify() {
         .then(answers => {
             spotifySong = (answers);
             console.log('Here is your song info for ' + spotifySong.spotifySong)
-            spotifyApi.search({ type: 'track', query: spotifySong.spotifySong, limit: 1})
+            spotifyApi.search({ type: 'track', query: spotifySong.spotifySong, limit: 1 })
                 .then(function (response) {
-                    console.log('Artist: ' + JSON.stringify(response.tracks.items[0].album.artists[0].name, null, 2) 
-                    + ' Album: ' + JSON.stringify(response.tracks.items[0].album.name, null, 2)
-                    +' Listen Here: ' + JSON.stringify(response.tracks.items[0].album.artists[0].external_urls.spotify, null, 2));
+                    console.log('Artist: ' + JSON.stringify(response.tracks.items[0].album.artists[0].name, null, 2)
+                        + ' Album: ' + JSON.stringify(response.tracks.items[0].album.name, null, 2)
+                        + ' Listen Here: ' + JSON.stringify(response.tracks.items[0].album.artists[0].external_urls.spotify, null, 2));
                 })
                 .catch(function (err) {
                     console.log(err);
@@ -111,12 +117,20 @@ function runOMDB() {
         .then(answers => {
             movieSearch = (answers);
             var omdbSearch = movieSearch.movieSearch;
-            request('http://www.omdbapi.com/?apikey=9d8265a0&t='+ omdbSearch.replace(/ /i, '+'), function (error, response, body) {
-                console.log('body:', body); 
-                console.log(body.Title);
-    })
+            request('http://www.omdbapi.com/?apikey=9d8265a0&t=' + omdbSearch.replace(/ /i, '+'), function (error, response, body) {
+                
+                console.log("Title: " +JSON.parse(body).Title);
+                console.log("Year: " +JSON.parse(body).Released);
+                console.log("IMBD: " +JSON.parse(body).imbdRating);
+                console.log("RT: " +JSON.parse(body).Ratings[1].Value);
+                console.log("Country: " +JSON.parse(body).Country);
+                console.log("Language: " +JSON.parse(body).Language);
+                console.log("Plot: " +JSON.parse(body).Plot);
+                console.log("Actors: " +JSON.parse(body).Actors);
+                
+            })
 
-});
+        });
 }
 
-runOMDB();
+fs.readFile();
